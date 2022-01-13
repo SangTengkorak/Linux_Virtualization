@@ -1,0 +1,55 @@
+# Install QEMU utilities
+sudo apt install qemu qemu-kvm
+
+# Disk Image Formats
+- Raw
+- QCOW, QEMU Copy On Write (Thin provisioning)
+
+# Create image for virtual machine
+qemu-img create -f qcow2 my-image.qcow2 60G
+
+# Mount ISO image to created disk, and boot it up with customize RAM
+qemu-system-x86_64 -cdrom Downloads/ISO/ubuntu-20.04.3-desktop-amd64.iso my-image.qcow2 -m 2G -enable-kvm
+
+# Modify several properties of VM Image
+qemu-system-x86_64 my-image.qcow2 -m 4G -net none -vga qxl  -enable-kvm
+
+# Install Virtual manager to ease VM operations
+sudo apt install virt-manager
+
+# Create VM using virt manager utlilities
+virt-install --name my-ubuntu --memory 2048 --disk size=60 --cdrom ~/Downloads/ISO/ubuntu-20.04.3-desktop-amd64.iso
+
+# Allow libvirt to be accessed by user
+https://github.com/jedi4ever/veewee/issues/996
+
+# Change allocated memory for VM temporary
+virsh setmem ubuntu20.04 2048M
+
+# Change allocated memory for VM permanently, VM must be poweredoff
+virsh setmem ubuntu20.04 1G --config
+
+# Set maximum memory for VM
+virsh setmaxmem ubuntu20.04 4G
+
+# Create additional storage using virsh
+sudo qemu-img create -f qcow2 /var/lib/libvirt/images/disk2.qcow2 20G
+
+# Attach additional storage to VM
+virsh attach-disk ubuntu20.04 --source /var/lib/libvirt/images/disk2.qcow2 --driver qemu --subdriver qcow2 --target vdb --persistent
+
+# Detach additional storage to VM
+virsh detach-disk ubuntu20.04 /var/lib/libvirt/images/disk2.qcow2
+
+# Autostart vm when host bootup
+virsh autostart ubuntu20.04
+
+# Disable autorstart for vm
+virsh autostart ubuntu20.04 --disable
+
+# Find and delete unused qemu images
+sudo find / -type f -name "*.qcow*" -exec ls -lah {} +
+
+
+# Sources
+https://computingforgeeks.com/virsh-commands-cheatsheet/
