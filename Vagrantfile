@@ -10,7 +10,7 @@ Vagrant.configure("2") do |config|
 	  sudo apt install software-properties-common -y
 	  sudo add-apt-repository --yes --update ppa:ansible/ansible
 	  sudo apt install ansible -y
-	  cat /vagrant/hostname_ansible.txt >> /etc/hosts
+	  sudo cat /vagrant/hostname_ansible.txt >> /etc/hosts
 	SHELL
    end
   end
